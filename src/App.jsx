@@ -1,9 +1,54 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { BookOpen, Monitor, Award, Briefcase, GraduationCap } from 'lucide-react';
+import { BookOpen, Monitor, Award, Briefcase, GraduationCap, ArrowDown } from 'lucide-react';
 import './index.css';
 
 // --- Subcomponents ---
+
+const FloatingBackground = () => {
+  const [orbs] = useState(() => 
+    [...Array(5)].map(() => ({
+      width: Math.random() * 300 + 100 + 'px',
+      height: Math.random() * 300 + 100 + 'px',
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      x: [0, Math.random() * 100 - 50, 0],
+      y: [0, Math.random() * 100 - 50, 0],
+      scale: [1, Math.random() * 0.2 + 0.9, 1],
+      duration: Math.random() * 10 + 10
+    }))
+  );
+
+  return (
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: -1 }}>
+      {orbs.map((orb, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: orb.width,
+            height: orb.height,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, rgba(41, 151, 255, 0.05) 0%, rgba(0,0,0,0) 70%)`,
+            left: orb.left,
+            top: orb.top,
+          }}
+          animate={{
+            x: orb.x,
+            y: orb.y,
+            scale: orb.scale,
+          }}
+          transition={{
+            duration: orb.duration,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const Hero = () => {
   const ref = useRef(null);
@@ -28,17 +73,21 @@ const Hero = () => {
         transition={{ duration: 1, delay: 0.2 }}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <div style={{
-          width: '200px',
-          height: '200px',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          marginBottom: '2rem',
-          border: '2px solid rgba(255,255,255,0.1)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
-        }}>
+        <motion.div 
+          style={{
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            marginBottom: '2rem',
+            border: '2px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+          }}
+          whileHover={{ scale: 1.05, boxShadow: '0 25px 50px rgba(41,151,255,0.4)' }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
           <img src="/profile.jpg" alt="R. Deepan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </div>
+        </motion.div>
         <h1 className="hero-text">R. DEEPAN</h1>
         <p style={{
           fontSize: '1.25rem',
@@ -50,6 +99,20 @@ const Hero = () => {
         }}>
           Assistant Librarian
         </p>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        style={{ position: 'absolute', bottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      >
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '10px' }}>Scroll to explore</span>
+        <motion.div
+           animate={{ y: [0, 10, 0] }}
+           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        >
+           <ArrowDown size={24} color="var(--text-secondary)" />
+        </motion.div>
       </motion.div>
     </motion.section>
   );
@@ -257,7 +320,8 @@ const Education = () => {
 
 function App() {
   return (
-    <main style={{ backgroundColor: '#000' }}>
+    <main style={{ backgroundColor: '#000', position: 'relative' }}>
+      <FloatingBackground />
       <Hero />
       <Summary />
       <Experience />
